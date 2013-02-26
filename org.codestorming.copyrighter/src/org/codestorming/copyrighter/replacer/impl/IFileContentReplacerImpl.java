@@ -43,6 +43,11 @@ public class IFileContentReplacerImpl extends ReplacerImpl implements IFileConte
 		super(null, startPosition, endPosition);
 		this.file = file;
 	}
+	
+	public IFileContentReplacerImpl(FileString fileString, int startPosition, int endPosition) {
+		super(null, startPosition, endPosition);
+		this.fileString = fileString;
+	}
 
 	@Override
 	public IFile getIFile() throws ReplacementException {

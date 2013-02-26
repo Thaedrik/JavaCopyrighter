@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="org.codestorming.copyrighter.projectContribution"
+            objectClass="org.eclipse.core.resources.IProject">
+         <visibility>
+            <objectState
+                  name="projectNature"
+                  value="org.eclipse.jdt.core.javanature">
+            </objectState>
+         </visibility>
+         <action
+               class="org.codestorming.copyrighter.ui.action.CopyrightProjectAction"
+               id="org.codestorming.copyrighter.action.copyrightProject"
+               label="Copyrighter"
+               style="push">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

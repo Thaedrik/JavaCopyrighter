@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
 /**
- * XXX Comment role class
+ * Represents a {@link CharSequence} of a text {@link File file}.
  * 
  * @author Thaedrik <thaedrik@gmail.com>
  */
@@ -35,7 +35,7 @@ public class FileString implements CharSequence {
 	private FutureTask<Boolean> loader;
 
 	/**
-	 * XXX Comment constructor
+	 * Creates a new {@code FileString} with the given {@link File file}.
 	 * 
 	 * @param file
 	 * @throws IllegalArgumentException if the given file is not a <em>normal file</em>.
@@ -55,9 +55,6 @@ public class FileString implements CharSequence {
 		load();
 	}
 
-	/**
-	 * XXX Comment method
-	 */
 	private synchronized void load() {
 		loader = new FutureTask<Boolean>(new Callable<Boolean>() {
 			@Override
@@ -173,11 +170,33 @@ public class FileString implements CharSequence {
 		if (offset != 0) {
 			char[] newContent = new char[size + offset];
 			System.arraycopy(content, 0, newContent, 0, start);
-			System.arraycopy(content, end, newContent, start + replacement.length(), content.length - end);
+			System.arraycopy(content, end, newContent, start + replacement.length(), size - end);
 			content = newContent;
 		}
 		replacement.getChars(0, replacement.length(), content, start);
 		size += offset;
+	}
+
+	/**
+	 * Flush the content into the file.
+	 * 
+	 * @throws IOException
+	 */
+	public synchronized void flush() throws IOException {
+		if (!ready()) {
+			return;
+		}// else
+
+		try {
+			new FileOutputStream(file, false).write(toString().getBytes());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public String toString() {
+		return new String(content, 0, size);
 	}
 
 	@Override
@@ -225,5 +244,4 @@ public class FileString implements CharSequence {
 			return false;
 		}
 	}
-
 }

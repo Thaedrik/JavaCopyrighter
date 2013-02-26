@@ -6,7 +6,11 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-Activator: org.codestorming.copyrighter.CopyrighterActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.core.resources;bundle-version="3.7.101"
+ org.eclipse.core.resources;bundle-version="3.7.101";visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Codestorming
+Export-Package: org.codestorming.copyrighter,
+ org.codestorming.copyrighter.replacer,
+ org.codestorming.copyrighter.replacer.impl,
+ org.codestorming.string
