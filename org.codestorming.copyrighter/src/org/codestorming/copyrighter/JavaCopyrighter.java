@@ -26,7 +26,6 @@ import org.codestorming.string.FileString;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Platform;
 
 /**
  * This class is an utility for inserting copyright header on each java files of an
@@ -36,125 +35,123 @@ import org.eclipse.core.runtime.Platform;
  */
 public class JavaCopyrighter {
 
-	protected static Pattern packagePattern = Pattern.compile("package[\\.\\s\\w]+;");
+    protected static Pattern packagePattern = Pattern.compile("package[\\.\\s\\w]+;");
 
-	/**
-	 * The project to copyright.
-	 */
-	protected IProject project;
+    /**
+     * The project to copyright.
+     */
+    protected IProject project;
 
-	/**
-	 * The copyright header to put into the projects' java files.
-	 */
-	private String copyright;
+    /**
+     * The copyright header to put into the projects' java files.
+     */
+    private String copyright;
 
-	private Stack<FutureTask<Void>> fileTasks;
+    private Stack<FutureTask<Void>> fileTasks;
 
-	/**
-	 * Creates a new {@code Copyrighter} for the given {@link IProject project}.
-	 * 
-	 * @param project The project to copyright.
-	 * @throws IllegalArgumentException if the given projects list is {@code null}.
-	 */
-	public JavaCopyrighter(IProject project) {
-		if (project == null) {
-			throw new IllegalArgumentException("The projects list cannot be null.");
-		}// else
+    /**
+     * Creates a new {@code Copyrighter} for the given {@link IProject project}.
+     * 
+     * @param project The project to copyright.
+     * @throws IllegalArgumentException if the given projects list is {@code null}.
+     */
+    public JavaCopyrighter(IProject project) {
+        if (project == null) {
+            throw new IllegalArgumentException("The projects list cannot be null.");
+        }// else
 
-		this.project = project;
-		fileTasks = new Stack<FutureTask<Void>>();
-	}
+        this.project = project;
+        fileTasks = new Stack<FutureTask<Void>>();
+    }
 
-	/**
-	 * Set the copyright header to put into the projects' java files.
-	 * 
-	 * @param copyright The copyright text.
-	 */
-	public void setCopyright(String copyright) {
-		this.copyright = copyright;
-	}
+    /**
+     * Set the copyright header to put into the projects' java files.
+     * 
+     * @param copyright The copyright text.
+     */
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
+    }
 
-	/**
-	 * Launch the operation to put the defined copyright header into all the java files of
-	 * the defined projects.
-	 * 
-	 * @throws IllegalStateException if no copyright has been defined.
-	 */
-	public void copyright() {
-		if (copyright == null) {
-			throw new IllegalStateException("No copyright has been defined");
-		}// else
+    /**
+     * Launch the operation to put the defined copyright header into all the java files of
+     * the defined projects.
+     * 
+     * @throws IllegalStateException if no copyright has been defined.
+     */
+    public void copyright() {
+        if (copyright == null) {
+            throw new IllegalStateException("No copyright has been defined");
+        }// else
 
-		for (IFileIterator fileIterator = new IFileIterator(project); fileIterator.hasNext();) {
-			copyrightIFile(fileIterator.next());
-		}
-		waitForFilesTasks();
-		try {
-			// refresh project content
-			project.refreshLocal(IProject.DEPTH_INFINITE, null);
-			fileTasks.clear();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
+        for (IFileIterator fileIterator = new IFileIterator(project); fileIterator.hasNext();) {
+            copyrightIFile(fileIterator.next());
+        }
+        waitForFilesTasks();
+        try {
+            // refresh project content
+            project.refreshLocal(IProject.DEPTH_INFINITE, null);
+            fileTasks.clear();
+        } catch (CoreException e) {
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * Waiting for files tasks to finish.
-	 */
-	private void waitForFilesTasks() {
-		for (FutureTask<Void> task : fileTasks) {
-			try {
-				task.get();// Wait for task to finish
-			} catch (InterruptedException e) {
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    /**
+     * Waiting for files tasks to finish.
+     */
+    private void waitForFilesTasks() {
+        for (FutureTask<Void> task : fileTasks) {
+            try {
+                task.get();// Wait for task to finish
+            } catch (InterruptedException e) {
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	/**
-	 * Insert the copyright into the given {@link IFile file}.
-	 * 
-	 * @param file The file to copyright.
-	 */
-	protected void copyrightIFile(final IFile file) {
-		FutureTask<Void> fileTask = new FutureTask<Void>(new Runnable() {
-			@Override
-			public void run() {
-				if (!file.exists() || !file.getFileExtension().equalsIgnoreCase("java")) {
-					return;// Doesn't exist or it's not a Java file.
-				}// else
+    /**
+     * Insert the copyright into the given {@link IFile file}.
+     * 
+     * @param file The file to copyright.
+     */
+    protected void copyrightIFile(final IFile file) {
+        FutureTask<Void> fileTask = new FutureTask<Void>(new Runnable() {
+            @Override
+            public void run() {
+                if (!file.exists() || !file.getFileExtension().equalsIgnoreCase("java")) {
+                    return;// Doesn't exist or it's not a Java file.
+                }// else
 
-				FileString fileString = new FileString(createFile(file));
-				Matcher m = packagePattern.matcher(fileString);
-				if (m.find()) {
-					IFileContentReplacer replacer = new IFileContentReplacerImpl(fileString, 0, m.start());
-					try {
-						replacer.replace(copyright);
-						fileString.flush();
-					} catch (ReplacementException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				} else {
-					// TODO Put the file in a list of none copyrighted files
-				}
-			}
-		}, null);
-		fileTasks.push(fileTask);
-		fileTask.run();
-	}
+                FileString fileString = new FileString(createFile(file));
+                Matcher m = packagePattern.matcher(fileString);
+                if (m.find()) {
+                    IFileContentReplacer replacer = new IFileContentReplacerImpl(fileString, 0, m.start());
+                    try {
+                        replacer.replace(copyright);
+                        fileString.flush();
+                    } catch (ReplacementException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // TODO Put the file in a list of none copyrighted files
+                }
+            }
+        }, null);
+        fileTasks.push(fileTask);
+        fileTask.run();
+    }
 
-	/**
-	 * Creates an IO {@link File file} with the given {@link IFile}.
-	 * 
-	 * @param iFile {@code IFile} to convert.
-	 * @return the created {@code File}.
-	 */
-	protected File createFile(IFile iFile) {
-		String path = iFile.getFullPath().toOSString();
-		path = Platform.getInstanceLocation().getURL().getFile() + path;
-		return new File(path);
-	}
+    /**
+     * Creates an IO {@link File file} with the given {@link IFile}.
+     * 
+     * @param iFile {@code IFile} to convert.
+     * @return the created {@code File}.
+     */
+    protected File createFile(IFile iFile) {
+        return new File(iFile.getLocation().toOSString());
+    }
 }
