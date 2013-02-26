@@ -1,14 +1,14 @@
-/*
- * IFileContentReplacerImpl.java                                        24 févr. 2013
- *
- * Copyright (c) 2013 Codestorming.org
- *
+/***************************************************************************
+ * Copyright (c) 2013 Codestorming.org.
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- */
+ * 
+ * Contributors:
+ *     Codestorming - initial API and implementation
+ ****************************************************************************/
 package org.codestorming.copyrighter.replacer.impl;
 
 import java.io.File;
@@ -29,7 +29,7 @@ public class IFileContentReplacerImpl extends ReplacerImpl implements IFileConte
 	 * The {@link IFile file} containing the substring to replace.
 	 */
 	protected IFile file;
-	
+
 	protected FileString fileString;
 
 	/**
@@ -43,7 +43,7 @@ public class IFileContentReplacerImpl extends ReplacerImpl implements IFileConte
 		super(null, startPosition, endPosition);
 		this.file = file;
 	}
-	
+
 	public IFileContentReplacerImpl(FileString fileString, int startPosition, int endPosition) {
 		super(null, startPosition, endPosition);
 		this.fileString = fileString;
@@ -59,7 +59,7 @@ public class IFileContentReplacerImpl extends ReplacerImpl implements IFileConte
 		if (fileString == null) {
 			IFile file = getIFile();
 			checkFile(file);
-	
+
 			// Creating a file from the IFile
 			String path = file.getFullPath().toOSString();
 			File f = new File(path);

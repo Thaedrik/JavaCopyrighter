@@ -1,14 +1,14 @@
-/*
- * CopyrightProjectAction.java                                        26 févr. 2013
- *
- * Copyright (c) 2013 Codestorming.org
- *
+/***************************************************************************
+ * Copyright (c) 2013 Codestorming.org.
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- */
+ * 
+ * Contributors:
+ *     Codestorming - initial API and implementation
+ ****************************************************************************/
 package org.codestorming.copyrighter.ui.action;
 
 import java.util.Date;
@@ -80,7 +80,8 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 
 	/**
 	 * Open the Copyrighter dialog
-	 * @param projects 
+	 * 
+	 * @param projects
 	 */
 	private void openCopyrighterDialog(Set<IProject> projects) {
 		// TODO Method implementation
@@ -102,9 +103,9 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 		copyright.append(" * ").append('\n');
 		copyright.append(" * Contributors:\n");
 		copyright.append(" *     Codestorming - initial API and implementation").append('\n');
-		copyright.append("****************************************************************************/").append('\n');
+		copyright.append(" ****************************************************************************/").append('\n');
 		String c = copyright.toString();
-		
+
 		// Copyright all the projects
 		for (IProject project : projects) {
 			JavaCopyrighter copyrighter = new JavaCopyrighter(project);
@@ -112,5 +113,5 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 			copyrighter.copyright();
 		}
 	}
-	
+
 }
