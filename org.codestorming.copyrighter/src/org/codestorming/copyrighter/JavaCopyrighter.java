@@ -53,11 +53,11 @@ public class JavaCopyrighter {
 	 * Creates a new {@code Copyrighter} for the given {@link IProject project}.
 	 * 
 	 * @param project The project to copyright.
-	 * @throws IllegalArgumentException if the given projects list is {@code null}.
+	 * @throws IllegalArgumentException if the given project is {@code null}.
 	 */
 	public JavaCopyrighter(IProject project) {
 		if (project == null) {
-			throw new IllegalArgumentException("The projects list cannot be null.");
+			throw new IllegalArgumentException("The project cannot be null.");
 		}// else
 
 		this.project = project;

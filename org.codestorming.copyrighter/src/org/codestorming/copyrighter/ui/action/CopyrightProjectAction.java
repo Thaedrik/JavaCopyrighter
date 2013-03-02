@@ -11,18 +11,20 @@
  ****************************************************************************/
 package org.codestorming.copyrighter.ui.action;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.codestorming.copyrighter.JavaCopyrighter;
+import org.codestorming.copyrighter.ui.dialog.CopyrightChooserDialog;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * Action for setting copyrights on project's java files.
@@ -84,32 +86,27 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 	 * @param projects
 	 */
 	private void openCopyrighterDialog(Set<IProject> projects) {
-		// TODO Method implementation
-		doTheStuff(projects);
+		Shell activeShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		if (activeShell == null) {
+			System.err.println("Shell null"); // TODO Error log
+			return;
+		}// else
+		CopyrightChooserDialog dialog = new CopyrightChooserDialog(activeShell);
+		if (dialog.open() == CopyrightChooserDialog.OK) {
+			doCopyright(projects, dialog.getCopyright());
+		}
 	}
 
-	// FIXME Temporary code
-	@SuppressWarnings("deprecation")
-	private void doTheStuff(Set<IProject> projects) {
-		StringBuilder copyright = new StringBuilder();
-		copyright.append("/***************************************************************************").append('\n');
-		copyright.append(" * Copyright (c) ").append(new Date().getYear() + 1900);
-		copyright.append(" Codestorming.org.").append('\n');
-		copyright.append(" * ").append('\n');
-		copyright.append(" * All rights reserved. This program and the accompanying materials").append('\n');
-		copyright.append(" * are made available under the terms of the Eclipse Public License v1.0").append('\n');
-		copyright.append(" * which accompanies this distribution, and is available at").append('\n');
-		copyright.append(" * http://www.eclipse.org/legal/epl-v10.html").append('\n');
-		copyright.append(" * ").append('\n');
-		copyright.append(" * Contributors:\n");
-		copyright.append(" *     Codestorming - initial API and implementation").append('\n');
-		copyright.append(" ****************************************************************************/").append('\n');
-		String c = copyright.toString();
-
-		// Copyright all the projects
+	/**
+	 * Copyrights all the given projects' java files.
+	 * 
+	 * @param projects
+	 * @param copyright
+	 */
+	private void doCopyright(Set<IProject> projects, String copyright) {
 		for (IProject project : projects) {
 			JavaCopyrighter copyrighter = new JavaCopyrighter(project);
-			copyrighter.setCopyright(c);
+			copyrighter.setCopyright(copyright);
 			copyrighter.copyright();
 		}
 	}

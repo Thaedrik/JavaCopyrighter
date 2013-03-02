@@ -21,14 +21,14 @@ public class ReplacementException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * XXX Comment constructor
+	 * Default constructor
 	 */
 	public ReplacementException() {
 		super();
 	}
 
 	/**
-	 * XXX Comment constructor
+	 * Creates a new {@code ReplacementException} with the given {@code message}.
 	 * 
 	 * @param message
 	 */
@@ -37,7 +37,7 @@ public class ReplacementException extends Exception {
 	}
 
 	/**
-	 * XXX Comment constructor
+	 * Creates a new {@code ReplacementException} with the given {@link Throwable}.
 	 * 
 	 * @param throwable
 	 */
@@ -46,7 +46,8 @@ public class ReplacementException extends Exception {
 	}
 
 	/**
-	 * XXX Comment constructor
+	 * Creates a new {@code ReplacementException} with the given {@code message} and
+	 * {@link Throwable}.
 	 * 
 	 * @param message
 	 * @param throwable

@@ -19,7 +19,7 @@ import org.codestorming.string.FileString;
 import org.eclipse.core.resources.IFile;
 
 /**
- * XXX Comment role class
+ * Default implementation of the {@link IFileContentReplacer} interface.
  * 
  * @author Thaedrik <thaedrik@gmail.com>
  */

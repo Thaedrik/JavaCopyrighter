@@ -19,9 +19,6 @@ import org.osgi.framework.BundleContext;
  */
 public class CopyrighterActivator extends AbstractUIPlugin {
 
-	// The plug-in ID
-	public static final String PLUGIN_ID = "org.codestorming.copyrighter"; //$NON-NLS-1$
-
 	// The shared instance
 	private static CopyrighterActivator plugin;
 
