@@ -18,6 +18,8 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class CopyrighterActivator extends AbstractUIPlugin {
+    
+    public static final String PLUGIN_ID = "org.codestorming.copyrighter";
 
 	// The shared instance
 	private static CopyrighterActivator plugin;

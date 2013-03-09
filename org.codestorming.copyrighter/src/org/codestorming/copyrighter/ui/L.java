@@ -25,8 +25,11 @@ public class L extends NLS {
 	public static String btn_ok;
 	public static String btn_removeContributor;
 	public static String emptyString;
+    public static String error_copyrightOperation;
 	public static String lbl_copyright;
+    public static String lbl_copyrightJob;
 	public static String lbl_license;
+    public static String msg_projectsCopyrighted;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, L.class);

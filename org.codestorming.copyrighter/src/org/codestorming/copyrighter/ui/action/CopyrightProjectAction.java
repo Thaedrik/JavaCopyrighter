@@ -11,20 +11,15 @@
  ****************************************************************************/
 package org.codestorming.copyrighter.ui.action;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
-import org.codestorming.copyrighter.JavaCopyrighter;
 import org.codestorming.copyrighter.ui.dialog.CopyrightChooserDialog;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 
 /**
  * Action for setting copyrights on project's java files.
@@ -104,11 +99,8 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 	 * @param copyright
 	 */
 	private void doCopyright(Set<IProject> projects, String copyright) {
-		for (IProject project : projects) {
-			JavaCopyrighter copyrighter = new JavaCopyrighter(project);
-			copyrighter.setCopyright(copyright);
-			copyrighter.copyright();
-		}
+	    // Schedule of the copyright job
+	    new CopyrightJob(projects, copyright).schedule();
 	}
 
 }
