@@ -15,6 +15,8 @@ import java.io.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
+import org.codestorming.eclipse.util.io.FileHelper;
+
 /**
  * Represents a {@link CharSequence} of a text {@link File file}.
  * 
@@ -79,9 +81,7 @@ public class FileString implements CharSequence {
 					e.printStackTrace();
 					return false;
 				} finally {
-					if (reader != null) {
-						reader.close();
-					}
+					FileHelper.close(reader);
 				}
 			}
 		});

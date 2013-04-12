@@ -28,12 +28,7 @@ public interface ICopyrighterConstants {
 	 */
 
 	/**
-	 * Name of the file containing the Copyrighter plug-in preferences.
-	 */
-	public static final String PREF_COPYRIGHTER_XML_STORE = "copyrighterStore"; //$NON-NLS-1$
-
-	/**
-	 * Name of the Licenses preferences.
+	 * Key for the preferences node containing the registered licenses.
 	 */
 	public static final String PREF_LICENSES = "registeredLicenses"; //$NON-NLS-1$
 
@@ -41,6 +36,11 @@ public interface ICopyrighterConstants {
 	 * Key for the preferences node containing the lastly used License preset.
 	 */
 	public static final String PREF_LAST_LICENSE = "lastLicensePreset"; //$NON-NLS-1$
+
+	/**
+	 * Key for the preferences node containing the last copyright header.
+	 */
+	public static final String PREF_LAST_COPYRIGHT_HEADER = "lastCopyHeader"; //$NON-NLS-1$
 
 	/**
 	 * Key for the preferences node containing the defined contributors.

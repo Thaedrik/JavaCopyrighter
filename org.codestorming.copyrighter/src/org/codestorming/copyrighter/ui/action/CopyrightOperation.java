@@ -28,33 +28,33 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
  */
 public class CopyrightOperation extends WorkspaceModifyOperation {
 
-    protected Collection<IProject> projects;
-    protected String copyright;
+	protected Collection<IProject> projects;
+	protected String copyright;
 
-    /**
-     * Creates a new {@code CopyrightOperation}.
-     * 
-     * @param projects
-     * @param copyright
-     */
-    public CopyrightOperation(Collection<IProject> projects, String copyright) {
-        this.projects = projects;
-        this.copyright = copyright;
-    }
+	/**
+	 * Creates a new {@code CopyrightOperation}.
+	 * 
+	 * @param projects
+	 * @param copyright
+	 */
+	public CopyrightOperation(Collection<IProject> projects, String copyright) {
+		this.projects = projects;
+		this.copyright = copyright;
+	}
 
-    @Override
-    protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException,
-            InterruptedException {
-        monitor.beginTask("Copyrighting projects", projects.size());
-        if (projects != null && copyright != null) {
-            for (IProject project : projects) {
-                JavaCopyrighter copyrighter = new JavaCopyrighter(project);
-                copyrighter.setCopyright(copyright);
-                copyrighter.copyright();
-                monitor.worked(1);
-            }
-        }
-        monitor.done();
-    }
+	@Override
+	protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException,
+			InterruptedException {
+		monitor.beginTask("Copyrighting projects", projects.size());
+		if (projects != null && copyright != null) {
+			for (IProject project : projects) {
+				JavaCopyrighter copyrighter = new JavaCopyrighter(project);
+				copyrighter.setCopyright(copyright);
+				copyrighter.copyright();
+				monitor.worked(1);
+			}
+		}
+		monitor.done();
+	}
 
 }

@@ -27,37 +27,37 @@ import org.eclipse.core.runtime.jobs.Job;
  */
 public class CopyrightJob extends Job {
 
-    protected Collection<IProject> projects;
-    protected String copyright;
+	protected Collection<IProject> projects;
+	protected String copyright;
 
-    /**
-     * Creates a new {@code CopyrightJob}.
-     * 
-     * @param name
-     * @param projects
-     * @param copyright
-     */
-    public CopyrightJob(Collection<IProject> projects, String copyright) {
-        super(L.lbl_copyrightJob);
-        this.projects = projects;
-        this.copyright = copyright;
-    }
+	/**
+	 * Creates a new {@code CopyrightJob}.
+	 * 
+	 * @param name
+	 * @param projects
+	 * @param copyright
+	 */
+	public CopyrightJob(Collection<IProject> projects, String copyright) {
+		super(L.lbl_copyrightJob);
+		this.projects = projects;
+		this.copyright = copyright;
+	}
 
-    @Override
-    protected IStatus run(IProgressMonitor monitor) {
-        IStatus status;
-        CopyrightOperation operation = new CopyrightOperation(projects, copyright);
-        try {
-            operation.execute(monitor);
-            status = new Status(IStatus.OK, CopyrighterActivator.PLUGIN_ID, L.msg_projectsCopyrighted);
-        } catch (InvocationTargetException e) {
-            status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
-        } catch (CoreException e) {
-            status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
-        } catch (InterruptedException e) {
-            status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
-        }
-        return status;
-    }
+	@Override
+	protected IStatus run(IProgressMonitor monitor) {
+		IStatus status;
+		CopyrightOperation operation = new CopyrightOperation(projects, copyright);
+		try {
+			operation.execute(monitor);
+			status = new Status(IStatus.OK, CopyrighterActivator.PLUGIN_ID, L.msg_projectsCopyrighted);
+		} catch (InvocationTargetException e) {
+			status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
+		} catch (CoreException e) {
+			status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
+		} catch (InterruptedException e) {
+			status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
+		}
+		return status;
+	}
 
 }

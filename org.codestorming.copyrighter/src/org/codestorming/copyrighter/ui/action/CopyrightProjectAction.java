@@ -99,8 +99,8 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 	 * @param copyright
 	 */
 	private void doCopyright(Set<IProject> projects, String copyright) {
-	    // Schedule of the copyright job
-	    new CopyrightJob(projects, copyright).schedule();
+		// Schedule of the copyright job
+		new CopyrightJob(projects, copyright).schedule();
 	}
 
 }

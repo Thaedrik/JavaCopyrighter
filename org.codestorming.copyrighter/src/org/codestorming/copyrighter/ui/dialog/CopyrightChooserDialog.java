@@ -11,6 +11,8 @@
  ****************************************************************************/
 package org.codestorming.copyrighter.ui.dialog;
 
+import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.codestorming.copyrighter.license.License;
@@ -19,14 +21,28 @@ import org.codestorming.copyrighter.ui.L;
 import org.codestorming.copyrighter.ui.LicenseLabelProvider;
 import org.codestorming.eclipse.util.swt.SWTUtil;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * Dialog for configuring the copyright and license header to put on java files.
@@ -45,6 +61,16 @@ public class CopyrightChooserDialog extends Dialog {
 	 */
 	public static final int CANCEL = 1;
 
+	/**
+	 * Default value of the copyright :
+	 * <p>
+	 * {@code Copyright (c) <currentYear>}
+	 */
+	public static final String DEFAULT_COPYRIGHT = "Copyright (c) " + Calendar.getInstance().get(Calendar.YEAR); //$NON-NLS-1$
+
+	/**
+	 * Helper providing the copyrighter preferences.
+	 */
 	protected CopyrighterPreferences preferences = new CopyrighterPreferences();
 
 	private String copyrightHeader;
@@ -72,6 +98,8 @@ public class CopyrightChooserDialog extends Dialog {
 	private Button btn_Ok;
 
 	private Button btn_RemoveContributor;
+
+	private Set<License> licenses;
 
 	/**
 	 * Creates a new {@code CopyrightChooserDialog}.
@@ -134,6 +162,7 @@ public class CopyrightChooserDialog extends Dialog {
 
 		txt_Copryright = new Text(shell, SWT.BORDER);
 		getFillHorizontalData().applyTo(txt_Copryright);
+		txt_Copryright.setText(getCopyrightInitialValue());
 	}
 
 	/**
@@ -144,12 +173,38 @@ public class CopyrightChooserDialog extends Dialog {
 		lbl_Presets.setText(L.lbl_license);
 		GridDataFactory.swtDefaults().applyTo(lbl_Presets);
 
-		Combo cc_Presets = new Combo(shell, SWT.DROP_DOWN);
+		Composite container = new Composite(shell, SWT.NONE);
+		getFillHorizontalData().applyTo(container);
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		container.setLayout(layout);
+		
+		Combo cc_Presets = new Combo(container, SWT.DROP_DOWN);
 		getFillHorizontalData().applyTo(cc_Presets);
 		viewer_Presets = new ComboViewer(cc_Presets);
 		viewer_Presets.setContentProvider(ArrayContentProvider.getInstance());
 		viewer_Presets.setLabelProvider(LicenseLabelProvider.getInstance());
-		viewer_Presets.setInput(preferences.getLicences());
+		licenses = preferences.getLicences();
+		viewer_Presets.setInput(licenses);
+		
+		Button btn_Other = new Button(container, SWT.PUSH);
+		btn_Other.setText(L.btn_other);
+		SWTUtil.computeButton(btn_Other, new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+		btn_Other.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LicenseEditingDialog dialog = new LicenseEditingDialog(shell);
+				if (dialog.open() == LicenseEditingDialog.OK) {
+					License license = dialog.getLicense();
+					if (license != null) {
+						licenses.add(license);
+						viewer_Presets.refresh();
+						viewer_Presets.setSelection(new StructuredSelection(license), true);
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -211,6 +266,19 @@ public class CopyrightChooserDialog extends Dialog {
 		SWTUtil.computeButton(btn_RemoveContributor, GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.BEGINNING)
 				.create());
 		btn_RemoveContributor.setEnabled(false);
+		btn_RemoveContributor.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				IStructuredSelection selection = (IStructuredSelection) viewer_Contributors.getSelection();
+				if (!selection.isEmpty()) {
+					for (Iterator<?> iter = selection.iterator(); iter.hasNext();) {
+						Object selected = iter.next();
+						contributors.remove(selected);
+					}
+					viewer_Contributors.refresh();
+				}
+			}
+		});
 	}
 
 	/**
@@ -281,6 +349,19 @@ public class CopyrightChooserDialog extends Dialog {
 	}
 
 	/**
+	 * Returns the initial value of the copyright field.
+	 * 
+	 * @return the initial value of the copyright field.
+	 */
+	protected String getCopyrightInitialValue() {
+		String lastHeader = preferences.getLastCopyrightHeader();
+		if (lastHeader == null || lastHeader.length() == 0) {
+			lastHeader = DEFAULT_COPYRIGHT;
+		}// else
+		return lastHeader;
+	}
+
+	/**
 	 * Returns the configured copyright to put on java files.
 	 * 
 	 * @return the configured copyright to put on java files.
@@ -295,18 +376,23 @@ public class CopyrightChooserDialog extends Dialog {
 	 */
 	protected void createCopyright() {
 		StringBuilder header = new StringBuilder();
-		header.append("/***************************************************************************").append('\n');
-		header.append(" * ").append(txt_Copryright.getText().replaceAll("\n", "\n * ")).append("\n");
-		header.append(" * ").append('\n');
+		header.append("/***************************************************************************"); //$NON-NLS-1$
+		header.append('\n');
+		header.append(" * ");
+		header.append(txt_Copryright.getText().replaceAll("\n", "\n * "));//$NON-NLS-1$ //$NON-NLS-2$
+		header.append('\n');
+		header.append(" * ").append('\n'); //$NON-NLS-1$
 		if (getLicenseText().length() > 0) {
-			header.append(getLicenseText().replaceAll("\n", "\n * "));
-			header.append(" * ").append('\n');
+			header.append(" * ");
+			header.append(getLicenseText().replaceAll("\n", "\n * ")); //$NON-NLS-1$ //$NON-NLS-2$
+			header.append(" * ").append('\n'); //$NON-NLS-1$
 		}
-		header.append(" * Contributors:\n");
+		header.append(" * Contributors:\n"); //$NON-NLS-1$
 		for (String contributor : contributors) {
-			header.append(" *     ").append(contributor).append('\n');
+			header.append(" *     ").append(contributor).append('\n'); //$NON-NLS-1$
 		}
-		header.append(" ****************************************************************************/").append('\n');
+		header.append(" ****************************************************************************/"); //$NON-NLS-1$
+		header.append('\n');
 		copyrightHeader = header.toString();
 	}
 
@@ -315,9 +401,16 @@ public class CopyrightChooserDialog extends Dialog {
 	 */
 	protected void save() {
 		preferences.setContributors(contributors);
+		preferences.setLastCopyrightHeader(txt_Copryright.getText());
 		License license = getLicense();
 		if (license != null) {
 			preferences.setLastLicensePreset(license.getName());
+			try {
+				preferences.addLicense(license);
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
 		}
 	}
 
