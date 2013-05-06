@@ -22,6 +22,7 @@ public class L extends NLS {
 	private static final String BUNDLE_NAME = "org.codestorming.copyrighter.ui.lbl"; //$NON-NLS-1$
 	public static String btn_addContributor;
 	public static String btn_cancel;
+	public static String btn_edit;
 	public static String btn_ok;
 	public static String btn_other;
 	public static String btn_removeContributor;

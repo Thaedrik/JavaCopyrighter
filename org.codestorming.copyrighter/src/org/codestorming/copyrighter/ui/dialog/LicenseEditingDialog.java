@@ -65,6 +65,16 @@ public class LicenseEditingDialog extends Dialog {
 	}
 
 	/**
+	 * Creates a new {@code LicenseEditingDialog}.
+	 * 
+	 * @param parent The parent {@link Shell shell}.
+	 */
+	public LicenseEditingDialog(Shell parent, License license) {
+		super(parent, SWT.RESIZE | SWT.APPLICATION_MODAL);
+		this.license = license;
+	}
+
+	/**
 	 * Opens this {@code LicenseEditingDialog}.
 	 * 
 	 * @return the pressed button flag; either {@link #OK} or {@link #CANCEL}.
@@ -100,12 +110,18 @@ public class LicenseEditingDialog extends Dialog {
 		lbl_LicenseName.setText("Name");
 		txt_LicenseName = new Text(shell, SWT.BORDER);
 		txt_LicenseName.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+		if (license != null) {
+			txt_LicenseName.setText(license.getName());
+		}
 
 		Label lbl_LicenseHeader = new Label(shell, SWT.NONE);
 		lbl_LicenseHeader.setText("Header");
 		lbl_LicenseHeader.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
 		txt_LicenseHeader = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		txt_LicenseHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		if (license != null) {
+			txt_LicenseHeader.setText(license.getHeader());
+		}
 
 		// TODO Add a textarea for the license content.
 
@@ -144,7 +160,12 @@ public class LicenseEditingDialog extends Dialog {
 	 * Creates the license
 	 */
 	private void createLicense() {
-		LicenseImpl license = new LicenseImpl();
+		final LicenseImpl license;
+		if (this.license == null) {
+			license = new LicenseImpl();
+		} else {
+			license = (LicenseImpl) this.license;
+		}
 		license.setName(txt_LicenseName.getText());
 		license.setHeader(txt_LicenseHeader.getText());
 		this.license = license;

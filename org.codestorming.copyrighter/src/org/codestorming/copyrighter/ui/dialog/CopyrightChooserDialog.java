@@ -175,7 +175,7 @@ public class CopyrightChooserDialog extends Dialog {
 
 		Composite container = new Composite(shell, SWT.NONE);
 		getFillHorizontalData().applyTo(container);
-		GridLayout layout = new GridLayout(2, false);
+		GridLayout layout = new GridLayout(3, false);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		container.setLayout(layout);
@@ -191,16 +191,38 @@ public class CopyrightChooserDialog extends Dialog {
 		Button btn_Other = new Button(container, SWT.PUSH);
 		btn_Other.setText(L.btn_other);
 		SWTUtil.computeButton(btn_Other, new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+		
+		Button btn_Edit = new Button(container, SWT.PUSH);
+		btn_Edit.setText(L.btn_edit);
+		SWTUtil.computeButton(btn_Edit, new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+		
 		btn_Other.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				LicenseEditingDialog dialog = new LicenseEditingDialog(shell);
+				final LicenseEditingDialog dialog = new LicenseEditingDialog(shell);
 				if (dialog.open() == LicenseEditingDialog.OK) {
-					License license = dialog.getLicense();
+					final License license = dialog.getLicense();
 					if (license != null) {
 						licenses.add(license);
 						viewer_Presets.refresh();
 						viewer_Presets.setSelection(new StructuredSelection(license), true);
+					}
+				}
+			}
+		});
+		
+		btn_Edit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final Object selected = ((StructuredSelection) viewer_Presets.getSelection()).getFirstElement();
+				if (selected != null) {
+					final License selectedLicense = (License) selected;
+					final LicenseEditingDialog dialog = new LicenseEditingDialog(shell, selectedLicense);
+					if (dialog.open() == LicenseEditingDialog.OK) {
+						final License license = dialog.getLicense();
+						if (license != null) {
+							viewer_Presets.refresh();
+						}
 					}
 				}
 			}
@@ -378,16 +400,15 @@ public class CopyrightChooserDialog extends Dialog {
 		StringBuilder header = new StringBuilder();
 		header.append("/***************************************************************************"); //$NON-NLS-1$
 		header.append('\n');
-		header.append(" * ");
+		header.append(" * "); //$NON-NLS-1$
 		header.append(txt_Copryright.getText().replaceAll("\n", "\n * "));//$NON-NLS-1$ //$NON-NLS-2$
 		header.append('\n');
 		header.append(" * ").append('\n'); //$NON-NLS-1$
 		if (getLicenseText().length() > 0) {
-			header.append(" * ");
+			header.append(" * "); //$NON-NLS-1$
 			header.append(getLicenseText().replaceAll("\n", "\n * ")); //$NON-NLS-1$ //$NON-NLS-2$
-			header.append(" * ").append('\n'); //$NON-NLS-1$
 		}
-		header.append(" * Contributors:\n"); //$NON-NLS-1$
+		header.append("\n * Contributors:\n"); //$NON-NLS-1$
 		for (String contributor : contributors) {
 			header.append(" *     ").append(contributor).append('\n'); //$NON-NLS-1$
 		}

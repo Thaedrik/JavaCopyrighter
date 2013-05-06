@@ -169,10 +169,12 @@ public class CopyrighterPreferences {
 	 *         file system at the bundle data location.
 	 */
 	public void addLicense(License license) throws SecurityException, IOException {
-		File licenseDataFile = getLicenseFile(license.getName());
-		if (licenseDataFile != null && !licenseDataFile.exists()) {
+		final File licenseDataFile = getLicenseFile(license.getName());
+		if (licenseDataFile != null) {
 			saveLicense(license);
-			addLicense(license.getName());
+			if (!licenseDataFile.exists()) {
+				addLicense(license.getName());
+			}
 		}
 	}
 
