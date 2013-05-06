@@ -36,6 +36,11 @@ public interface ICopyrighterConstants {
 	 * Key for the preferences node containing the lastly used License preset.
 	 */
 	public static final String PREF_LAST_LICENSE = "lastLicensePreset"; //$NON-NLS-1$
+	
+	/**
+	 * Key for the preferences node containing the registered licenses content.
+	 */
+	public static final String PREF_LICENSES_CONTENT = "licensesContent";
 
 	/**
 	 * Key for the preferences node containing the last copyright header.

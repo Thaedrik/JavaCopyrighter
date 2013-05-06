@@ -11,6 +11,10 @@
  ****************************************************************************/
 package org.codestorming.copyrighter.preferences;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -50,7 +54,28 @@ public class CopyrighterPreferences {
 	 * 
 	 * @return the registered {@link License licenses}.
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<License> getLicences() {
+		Set<License> licenses = null;
+		final String serializedLicenses = getStore().getString(ICopyrighterConstants.PREF_LICENSES_CONTENT);
+		final ByteArrayInputStream bais = new ByteArrayInputStream(serializedLicenses.getBytes());
+		final XMLDecoder xmlDecoder = new XMLDecoder(bais);
+		try {
+			final Object readObject = xmlDecoder.readObject();
+			if (readObject instanceof Set) {
+				licenses = (Set<License>) readObject;
+			}
+		} catch (Exception e) {
+		}
+		return licenses == null ? new LinkedHashSet<License>() : licenses;
+	}
+
+	/**
+	 * Returns the registered {@link License licenses}.
+	 * 
+	 * @return the registered {@link License licenses}.
+	 */
+	public Set<License> getLicencesV1() {
 		Set<String> licensesNames = getRegisteredLicenses();
 		Set<License> licenses = new LinkedHashSet<License>(licensesNames.size());
 		for (String licenseName : licensesNames) {
@@ -168,7 +193,32 @@ public class CopyrighterPreferences {
 	 * @throws SecurityException If the current user have not enough rights to use the
 	 *         file system at the bundle data location.
 	 */
-	public void addLicense(License license) throws SecurityException, IOException {
+	public void addLicense(License license) {
+		final Set<License> licenses = getLicences();
+		if (license != null) {
+			// Add/Replace the license
+			licenses.remove(license);
+			licenses.add(license);
+		}
+		
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+		final XMLEncoder xmlEncoder = new XMLEncoder(baos);
+		xmlEncoder.writeObject(licenses);
+		xmlEncoder.flush();
+		getStore().setValue(ICopyrighterConstants.PREF_LICENSES_CONTENT, baos.toString());
+	}
+
+	/**
+	 * Registers the given {@link License license}.
+	 * <p>
+	 * Does nothing if the license already exists.
+	 * 
+	 * @param license The license to register
+	 * @throws IOException If an error occurs when saving the license.
+	 * @throws SecurityException If the current user have not enough rights to use the
+	 *         file system at the bundle data location.
+	 */
+	public void addLicenseV1(License license) throws SecurityException, IOException {
 		final File licenseDataFile = getLicenseFile(license.getName());
 		if (licenseDataFile != null) {
 			saveLicense(license);
@@ -192,6 +242,23 @@ public class CopyrighterPreferences {
 	 *         file system at the bundle data location.
 	 */
 	public void removeLicense(License license) throws SecurityException {
+		final Set<License> licenses = getLicences();
+		licenses.remove(license);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+		final XMLEncoder xmlEncoder = new XMLEncoder(baos);
+		xmlEncoder.writeObject(licenses);
+		xmlEncoder.flush();
+		getStore().setValue(ICopyrighterConstants.PREF_LICENSES_CONTENT, baos.toString());
+	}
+
+	/**
+	 * Removes the given {@link License license}.
+	 * 
+	 * @param license The license to remove.
+	 * @throws SecurityException If the current user have not enough rights to use the
+	 *         file system at the bundle data location.
+	 */
+	public void removeLicenseV1(License license) throws SecurityException {
 		File licenseDataFile = getLicenseFile(license == null ? null : license.getName());
 		if (licenseDataFile != null && licenseDataFile.exists()) {
 			licenseDataFile.delete();

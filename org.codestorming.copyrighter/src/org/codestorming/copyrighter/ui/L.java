@@ -25,6 +25,7 @@ public class L extends NLS {
 	public static String btn_edit;
 	public static String btn_ok;
 	public static String btn_other;
+	public static String btn_remove;
 	public static String btn_removeContributor;
 	public static String emptyString;
     public static String error_copyrightOperation;

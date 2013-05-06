@@ -12,7 +12,6 @@
 package org.codestorming.copyrighter.ui.dialog;
 
 import org.codestorming.copyrighter.license.License;
-import org.codestorming.copyrighter.license.LicenseImpl;
 import org.codestorming.copyrighter.ui.L;
 import org.codestorming.eclipse.util.swt.SWTUtil;
 import org.eclipse.swt.SWT;
@@ -112,6 +111,7 @@ public class LicenseEditingDialog extends Dialog {
 		txt_LicenseName.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		if (license != null) {
 			txt_LicenseName.setText(license.getName());
+			txt_LicenseName.setEnabled(false);
 		}
 
 		Label lbl_LicenseHeader = new Label(shell, SWT.NONE);
@@ -160,11 +160,11 @@ public class LicenseEditingDialog extends Dialog {
 	 * Creates the license
 	 */
 	private void createLicense() {
-		final LicenseImpl license;
+		final License license;
 		if (this.license == null) {
-			license = new LicenseImpl();
+			license = new License();
 		} else {
-			license = (LicenseImpl) this.license;
+			license = this.license;
 		}
 		license.setName(txt_LicenseName.getText());
 		license.setHeader(txt_LicenseHeader.getText());

@@ -196,6 +196,10 @@ public class CopyrightChooserDialog extends Dialog {
 		btn_Edit.setText(L.btn_edit);
 		SWTUtil.computeButton(btn_Edit, new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
 		
+		Button btn_Remove = new Button(container, SWT.PUSH);
+		btn_Remove.setText(L.btn_remove);
+		SWTUtil.computeButton(btn_Remove, new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+		
 		btn_Other.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -206,6 +210,7 @@ public class CopyrightChooserDialog extends Dialog {
 						licenses.add(license);
 						viewer_Presets.refresh();
 						viewer_Presets.setSelection(new StructuredSelection(license), true);
+						preferences.addLicense(license);
 					}
 				}
 			}
@@ -224,6 +229,20 @@ public class CopyrightChooserDialog extends Dialog {
 							viewer_Presets.refresh();
 						}
 					}
+				}
+			}
+		});
+		
+		btn_Remove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final Object selected = ((StructuredSelection) viewer_Presets.getSelection()).getFirstElement();
+				if (selected instanceof License) {
+					final License license = (License) selected;
+					licenses.remove(license);
+					viewer_Presets.refresh();
+					viewer_Presets.setSelection(new StructuredSelection());
+					preferences.removeLicense(license);
 				}
 			}
 		});
@@ -426,12 +445,6 @@ public class CopyrightChooserDialog extends Dialog {
 		License license = getLicense();
 		if (license != null) {
 			preferences.setLastLicensePreset(license.getName());
-			try {
-				preferences.addLicense(license);
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
 		}
 	}
 
