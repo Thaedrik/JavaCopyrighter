@@ -55,7 +55,10 @@ public class CopyrighterPreferences {
 		Set<License> licenses = new LinkedHashSet<License>(licensesNames.size());
 		for (String licenseName : licensesNames) {
 			try {
-				licenses.add(loadLicense(licenseName));
+				final License license = loadLicense(licenseName);
+				if (license != null) {
+					licenses.add(license);
+				}
 			} catch (Exception e) {
 				// Ignore
 			}
