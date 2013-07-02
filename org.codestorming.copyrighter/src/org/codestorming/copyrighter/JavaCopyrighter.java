@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import org.codestorming.copyrighter.replacer.IFileContentReplacer;
 import org.codestorming.copyrighter.replacer.ReplacementException;
 import org.codestorming.copyrighter.replacer.impl.IFileContentReplacerImpl;
-import org.codestorming.string.FileString;
+import org.codestorming.util.io.FileString;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;

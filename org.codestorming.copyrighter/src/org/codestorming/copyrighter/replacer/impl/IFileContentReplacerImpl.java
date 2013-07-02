@@ -15,7 +15,7 @@ import java.io.File;
 
 import org.codestorming.copyrighter.replacer.IFileContentReplacer;
 import org.codestorming.copyrighter.replacer.ReplacementException;
-import org.codestorming.string.FileString;
+import org.codestorming.util.io.FileString;
 import org.eclipse.core.resources.IFile;
 
 /**

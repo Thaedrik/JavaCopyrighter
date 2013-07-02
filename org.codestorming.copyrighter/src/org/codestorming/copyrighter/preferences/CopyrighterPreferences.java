@@ -27,7 +27,7 @@ import java.util.Set;
 import org.codestorming.copyrighter.CopyrighterActivator;
 import org.codestorming.copyrighter.ICopyrighterConstants;
 import org.codestorming.copyrighter.license.License;
-import org.codestorming.eclipse.util.io.FileHelper;
+import org.codestorming.util.io.FileHelper;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
 
