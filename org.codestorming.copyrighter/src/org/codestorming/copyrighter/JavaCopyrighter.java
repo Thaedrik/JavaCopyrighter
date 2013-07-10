@@ -35,7 +35,14 @@ import org.eclipse.core.runtime.CoreException;
  */
 public class JavaCopyrighter {
 
-	protected static Pattern packagePattern = Pattern.compile("package[\\.\\s\\w]+;");
+	/**
+	 * Compatible extensions of files that can contain a copyright.
+	 * 
+	 * @since 0.2
+	 */
+	public static final String[] compatibleExtensions = { "java", "xtend" };
+
+	protected static Pattern packagePattern = Pattern.compile("package[\\.\\s\\w]+;?");
 
 	/**
 	 * The project to copyright.
@@ -120,8 +127,8 @@ public class JavaCopyrighter {
 		FutureTask<Void> fileTask = new FutureTask<Void>(new Runnable() {
 			@Override
 			public void run() {
-				if (!file.exists() || !file.getFileExtension().equalsIgnoreCase("java")) {
-					return;// Doesn't exist or it's not a Java file.
+				if (!file.exists() || !extensionIsCompatible(file)) {
+					return;// Doesn't exist or it's not a compatible file.
 				}// else
 
 				FileString fileString = new FileString(createFile(file));
@@ -153,5 +160,21 @@ public class JavaCopyrighter {
 	 */
 	protected File createFile(IFile iFile) {
 		return new File(iFile.getLocation().toOSString());
+	}
+
+	/**
+	 * Indicates if the given file has one of the compatible
+	 * {@link JavaCopyrighter#compatibleExtensions extensions}.
+	 * 
+	 * @since 0.2
+	 */
+	protected boolean extensionIsCompatible(IFile file) {
+		final String fileExtension = file.getFileExtension();
+		for (final String extension : compatibleExtensions) {
+			if (extension.equalsIgnoreCase(fileExtension)) {
+				return true;
+			}
+		}// else
+		return false;
 	}
 }
