@@ -15,21 +15,14 @@ import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.codestorming.copyrighter.CopyrighterActivator;
 import org.codestorming.copyrighter.ICopyrighterConstants;
 import org.codestorming.copyrighter.license.License;
-import org.codestorming.util.io.FileHelper;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.osgi.framework.Bundle;
 
 /**
  * Provides the Java Copyrighter plug-in global preferences.
@@ -68,38 +61,6 @@ public class CopyrighterPreferences {
 		} catch (Exception e) {
 		}
 		return licenses == null ? new LinkedHashSet<License>() : licenses;
-	}
-
-	/**
-	 * Returns the registered {@link License licenses}.
-	 * 
-	 * @return the registered {@link License licenses}.
-	 */
-	public Set<License> getLicencesV1() {
-		Set<String> licensesNames = getRegisteredLicenses();
-		Set<License> licenses = new LinkedHashSet<License>(licensesNames.size());
-		for (String licenseName : licensesNames) {
-			try {
-				final License license = loadLicense(licenseName);
-				if (license != null) {
-					licenses.add(license);
-				}
-			} catch (Exception e) {
-				// Ignore
-			}
-		}
-		return licenses;
-	}
-
-	protected Set<String> getRegisteredLicenses() {
-		String licensesStr = getStore().getString(ICopyrighterConstants.PREF_LICENSES);
-		Set<String> licenses = new LinkedHashSet<String>();
-		if (licensesStr.length() > 0) {
-			for (String license : licensesStr.split(SEPARATOR)) {
-				licenses.add(license);
-			}
-		}
-		return licenses;
 	}
 
 	/**
@@ -171,18 +132,6 @@ public class CopyrighterPreferences {
 		getStore().setValue(ICopyrighterConstants.PREF_CONTRIBUTORS, contributorStr.toString());
 	}
 
-	public void setRegisteredLicenses(Set<String> licenses) {
-		StringBuilder licenseStr = new StringBuilder();
-		if (licenses.size() > 0) {
-			for (String license : licenses) {
-				licenseStr.append(license);
-				licenseStr.append(SEPARATOR);
-			}
-			licenseStr.deleteCharAt(licenseStr.length() - 1);
-		}
-		getStore().setValue(ICopyrighterConstants.PREF_LICENSES, licenseStr.toString());
-	}
-
 	/**
 	 * Registers the given {@link License license}.
 	 * <p>
@@ -204,34 +153,8 @@ public class CopyrighterPreferences {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
 		final XMLEncoder xmlEncoder = new XMLEncoder(baos);
 		xmlEncoder.writeObject(licenses);
-		xmlEncoder.flush();
+		xmlEncoder.close();
 		getStore().setValue(ICopyrighterConstants.PREF_LICENSES_CONTENT, baos.toString());
-	}
-
-	/**
-	 * Registers the given {@link License license}.
-	 * <p>
-	 * Does nothing if the license already exists.
-	 * 
-	 * @param license The license to register
-	 * @throws IOException If an error occurs when saving the license.
-	 * @throws SecurityException If the current user have not enough rights to use the
-	 *         file system at the bundle data location.
-	 */
-	public void addLicenseV1(License license) throws SecurityException, IOException {
-		final File licenseDataFile = getLicenseFile(license.getName());
-		if (licenseDataFile != null) {
-			saveLicense(license);
-			if (!licenseDataFile.exists()) {
-				addLicense(license.getName());
-			}
-		}
-	}
-
-	protected void addLicense(String licenseName) {
-		Set<String> licenses = getRegisteredLicenses();
-		licenses.add(licenseName);
-		setRegisteredLicenses(licenses);
 	}
 
 	/**
@@ -247,104 +170,8 @@ public class CopyrighterPreferences {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
 		final XMLEncoder xmlEncoder = new XMLEncoder(baos);
 		xmlEncoder.writeObject(licenses);
-		xmlEncoder.flush();
+		xmlEncoder.close();
 		getStore().setValue(ICopyrighterConstants.PREF_LICENSES_CONTENT, baos.toString());
 	}
 
-	/**
-	 * Removes the given {@link License license}.
-	 * 
-	 * @param license The license to remove.
-	 * @throws SecurityException If the current user have not enough rights to use the
-	 *         file system at the bundle data location.
-	 */
-	public void removeLicenseV1(License license) throws SecurityException {
-		File licenseDataFile = getLicenseFile(license == null ? null : license.getName());
-		if (licenseDataFile != null && licenseDataFile.exists()) {
-			licenseDataFile.delete();
-			removeLicense(license.getName());
-		}
-	}
-	
-	protected void removeLicense(String licenseName) {
-		Set<String> licenses = getRegisteredLicenses();
-		licenses.remove(licenseName);
-		setRegisteredLicenses(licenses);
-	}
-
-	/**
-	 * Returns the {@link File} located in the bundle data and corresponding to the given
-	 * {@code licenseName} or {@code null} if the licenseName is {@code null}.
-	 * <p>
-	 * Note the returned file may not exist.
-	 * 
-	 * @param licenseName The name of the file to get.
-	 * @return the {@link File} located in the bundle data and corresponding to the given
-	 *         {@code licenseName}.
-	 */
-	protected File getLicenseFile(String licenseName) {
-		File licenseDataFile = null;
-		if (licenseName != null) {
-			Bundle bundle = CopyrighterActivator.getDefault().getBundle();
-			licenseDataFile = bundle.getDataFile(licenseName);
-		}
-		return licenseDataFile;
-	}
-
-	/**
-	 * Saves the given {@link License license}.
-	 * <p>
-	 * The license will be saved only if its name is not {@code null}.
-	 * 
-	 * @param license The license to save.
-	 * @throws IOException If an error occurs when saving.
-	 * @throws SecurityException If the current user have not enough rights to use the
-	 *         file system at the bundle data location.
-	 */
-	protected void saveLicense(License license) throws IOException, SecurityException {
-		File licenseDataFile = getLicenseFile(license.getName());
-		if (licenseDataFile != null) {
-			if (!licenseDataFile.exists()) {
-				licenseDataFile.createNewFile();
-			}
-			FileOutputStream fos = null;
-			ObjectOutputStream oos = null;
-			try {
-				fos = new FileOutputStream(licenseDataFile);
-				oos = new ObjectOutputStream(fos);
-				oos.writeObject(license);
-			} finally {
-				FileHelper.close(oos);
-			}
-		}
-	}
-
-	/**
-	 * Loads the {@link License} corresponding to the given {@code licenseName}.
-	 * 
-	 * @param licenseName The name of the license to load.
-	 * @return the {@link License} corresponding to the given {@code licenseName}, or
-	 *         {@code null}.
-	 * @throws IOException If an error occurs when saving.
-	 * @throws SecurityException If the current user have not enough rights to use the
-	 *         file system at the bundle data location.
-	 */
-	protected License loadLicense(String licenseName) throws IOException, ClassNotFoundException {
-		File licenseDataFile = getLicenseFile(licenseName);
-		if (licenseDataFile != null && licenseDataFile.exists()) {
-			FileInputStream fis = null;
-			ObjectInputStream ois = null;
-			try {
-				fis = new FileInputStream(licenseDataFile);
-				ois = new ObjectInputStream(fis);
-				Object license = ois.readObject();
-				if (license instanceof License) {
-					return (License) license;
-				}
-			} finally {
-				FileHelper.close(ois);
-			}
-		}
-		return null;
-	}
 }
