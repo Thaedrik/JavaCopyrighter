@@ -180,13 +180,18 @@ public class CopyrightChooserDialog extends Dialog {
 		layout.marginHeight = 0;
 		container.setLayout(layout);
 		
-		Combo cc_Presets = new Combo(container, SWT.DROP_DOWN);
+		Combo cc_Presets = new Combo(container, SWT.DROP_DOWN | SWT.READ_ONLY);
 		getFillHorizontalData().applyTo(cc_Presets);
 		viewer_Presets = new ComboViewer(cc_Presets);
 		viewer_Presets.setContentProvider(ArrayContentProvider.getInstance());
 		viewer_Presets.setLabelProvider(LicenseLabelProvider.getInstance());
 		licenses = preferences.getLicences();
 		viewer_Presets.setInput(licenses);
+		for (final License license : licenses) {
+			if (license.getName().equals(preferences.getLastLicensePreset())) {
+				viewer_Presets.setSelection(new StructuredSelection(license));
+			}
+		}
 		
 		Button btn_Other = new Button(container, SWT.PUSH);
 		btn_Other.setText(L.btn_other);
