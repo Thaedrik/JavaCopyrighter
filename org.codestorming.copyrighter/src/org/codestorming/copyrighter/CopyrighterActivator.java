@@ -11,50 +11,16 @@
  ****************************************************************************/
 package org.codestorming.copyrighter;
 
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleContext;
+import org.codestorming.eclipse.util.pde.UIPluginWithLog;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class CopyrighterActivator extends AbstractUIPlugin {
+public class CopyrighterActivator extends UIPluginWithLog {
     
-    public static final String PLUGIN_ID = "org.codestorming.copyrighter";
-
-	// The shared instance
-	private static CopyrighterActivator plugin;
-
-	/**
-	 * The constructor
-	 */
-	public CopyrighterActivator() {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
-	}
-
-	/**
-	 * Returns the shared instance
-	 * 
-	 * @return the shared instance
-	 */
-	public static CopyrighterActivator getDefault() {
-		return plugin;
+	@Override
+	public String getPluginID() {
+		return ICopyrighterConstants.PLUGIN_ID;
 	}
 
 }

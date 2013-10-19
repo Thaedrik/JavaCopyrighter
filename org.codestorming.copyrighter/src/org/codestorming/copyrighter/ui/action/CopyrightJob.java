@@ -14,10 +14,13 @@ package org.codestorming.copyrighter.ui.action;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
-import org.codestorming.copyrighter.CopyrighterActivator;
+import org.codestorming.copyrighter.ICopyrighterConstants;
 import org.codestorming.copyrighter.ui.L;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 /**
@@ -49,13 +52,13 @@ public class CopyrightJob extends Job {
 		CopyrightOperation operation = new CopyrightOperation(projects, copyright);
 		try {
 			operation.execute(monitor);
-			status = new Status(IStatus.OK, CopyrighterActivator.PLUGIN_ID, L.msg_projectsCopyrighted);
+			status = new Status(IStatus.OK, ICopyrighterConstants.PLUGIN_ID, L.msg_projectsCopyrighted);
 		} catch (InvocationTargetException e) {
-			status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
+			status = new Status(IStatus.ERROR, ICopyrighterConstants.PLUGIN_ID, L.error_copyrightOperation, e);
 		} catch (CoreException e) {
-			status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
+			status = new Status(IStatus.ERROR, ICopyrighterConstants.PLUGIN_ID, L.error_copyrightOperation, e);
 		} catch (InterruptedException e) {
-			status = new Status(IStatus.ERROR, CopyrighterActivator.PLUGIN_ID, L.error_copyrightOperation, e);
+			status = new Status(IStatus.ERROR, ICopyrighterConstants.PLUGIN_ID, L.error_copyrightOperation, e);
 		}
 		return status;
 	}

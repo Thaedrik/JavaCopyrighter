@@ -11,15 +11,21 @@
  ****************************************************************************/
 package org.codestorming.copyrighter.ui.action;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
+import org.codestorming.copyrighter.CopyrighterActivator;
 import org.codestorming.copyrighter.ui.dialog.CopyrightChooserDialog;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * Action for setting copyrights on project's java files.
@@ -33,9 +39,7 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 	@Override
 	public void run(IAction action) {
 		Set<IProject> projects = getProjectsFromSelection();
-		if (projects.isEmpty()) {
-			noProjectSelected();
-		} else {
+		if (!projects.isEmpty()) {
 			openCopyrighterDialog(projects);
 		}
 	}
@@ -64,16 +68,7 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 	}
 
 	@Override
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-	}
-
-	/**
-	 * What to do if there is no selected project.
-	 */
-	private void noProjectSelected() {
-		// TODO Method implementation
-
-	}
+	public void setActivePart(IAction action, IWorkbenchPart targetPart) {}
 
 	/**
 	 * Open the Copyrighter dialog
@@ -83,7 +78,7 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 	private void openCopyrighterDialog(Set<IProject> projects) {
 		Shell activeShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		if (activeShell == null) {
-			System.err.println("Shell null"); // TODO Error log
+			CopyrighterActivator.log("Shell is null.", IStatus.ERROR);
 			return;
 		}// else
 		CopyrightChooserDialog dialog = new CopyrightChooserDialog(activeShell);
