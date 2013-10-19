@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.codestorming.copyrighter.CopyrighterActivator;
+import org.codestorming.copyrighter.internal.license.CopyrightImpl;
 import org.codestorming.copyrighter.ui.dialog.CopyrightChooserDialog;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
@@ -93,7 +94,7 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 	 * @param projects
 	 * @param copyright
 	 */
-	private void doCopyright(Set<IProject> projects, String copyright) {
+	private void doCopyright(Set<IProject> projects, CopyrightImpl copyright) {
 		// Schedule of the copyright job
 		new CopyrightJob(projects, copyright).schedule();
 	}

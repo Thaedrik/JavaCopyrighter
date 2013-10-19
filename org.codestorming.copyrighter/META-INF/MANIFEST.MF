@@ -13,6 +13,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Codestorming
 Export-Package: org.codestorming.copyrighter,
+ org.codestorming.copyrighter.license,
  org.codestorming.copyrighter.replacer,
  org.codestorming.copyrighter.replacer.impl,
  org.codestorming.copyrighter.ui.action

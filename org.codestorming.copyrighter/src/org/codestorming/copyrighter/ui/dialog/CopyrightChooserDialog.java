@@ -11,10 +11,14 @@
  ****************************************************************************/
 package org.codestorming.copyrighter.ui.dialog;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.codestorming.copyrighter.internal.license.CopyrightImpl;
+import org.codestorming.copyrighter.license.Copyright;
 import org.codestorming.copyrighter.license.License;
 import org.codestorming.copyrighter.preferences.CopyrighterPreferences;
 import org.codestorming.copyrighter.ui.L;
@@ -73,8 +77,6 @@ public class CopyrightChooserDialog extends Dialog {
 	 */
 	protected CopyrighterPreferences preferences = new CopyrighterPreferences();
 
-	private String copyrightHeader;
-
 	private Set<String> contributors;
 
 	private Shell shell;
@@ -100,6 +102,8 @@ public class CopyrightChooserDialog extends Dialog {
 	private Button btn_RemoveContributor;
 
 	private Set<License> licenses;
+
+	private CopyrightImpl copyright;
 
 	/**
 	 * Creates a new {@code CopyrightChooserDialog}.
@@ -179,7 +183,7 @@ public class CopyrightChooserDialog extends Dialog {
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		container.setLayout(layout);
-		
+
 		Combo cc_Presets = new Combo(container, SWT.DROP_DOWN | SWT.READ_ONLY);
 		getFillHorizontalData().applyTo(cc_Presets);
 		viewer_Presets = new ComboViewer(cc_Presets);
@@ -192,19 +196,19 @@ public class CopyrightChooserDialog extends Dialog {
 				viewer_Presets.setSelection(new StructuredSelection(license));
 			}
 		}
-		
+
 		Button btn_Other = new Button(container, SWT.PUSH);
 		btn_Other.setText(L.btn_other);
 		SWTUtil.computeButton(btn_Other, new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
-		
+
 		Button btn_Edit = new Button(container, SWT.PUSH);
 		btn_Edit.setText(L.btn_edit);
 		SWTUtil.computeButton(btn_Edit, new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
-		
+
 		Button btn_Remove = new Button(container, SWT.PUSH);
 		btn_Remove.setText(L.btn_remove);
 		SWTUtil.computeButton(btn_Remove, new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
-		
+
 		btn_Other.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -220,7 +224,7 @@ public class CopyrightChooserDialog extends Dialog {
 				}
 			}
 		});
-		
+
 		btn_Edit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -232,12 +236,13 @@ public class CopyrightChooserDialog extends Dialog {
 						final License license = dialog.getLicense();
 						if (license != null) {
 							viewer_Presets.refresh();
+							preferences.addLicense(license);
 						}
 					}
 				}
 			}
 		});
-		
+
 		btn_Remove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -286,6 +291,7 @@ public class CopyrightChooserDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				if (txt_Contributor.getText().length() > 0) {
 					contributors.add(txt_Contributor.getText());
+					txt_Contributor.setText(L.emptyString);
 					viewer_Contributors.refresh(false);
 				}
 			}
@@ -368,19 +374,6 @@ public class CopyrightChooserDialog extends Dialog {
 	}
 
 	/**
-	 * Returns the selected license header or the empty string if no license is selected.
-	 * 
-	 * @return the selected license header.
-	 */
-	private String getLicenseText() {
-		License license = getLicense();
-		if (license != null) {
-			return ((License) license).getHeader();
-		}// else
-		return L.emptyString;
-	}
-
-	/**
 	 * Returns the selected license, or {@code null}.
 	 * 
 	 * @return the selected license, or {@code null}.
@@ -412,33 +405,17 @@ public class CopyrightChooserDialog extends Dialog {
 	 * 
 	 * @return the configured copyright to put on java files.
 	 */
-	public String getCopyright() {
-		return copyrightHeader;
+	public CopyrightImpl getCopyright() {
+		return copyright;
 	}
 
 	/**
-	 * Generates the header to put on java files with the configuration made with this
-	 * dialog.
+	 * Create the {@link Copyright} to put on java files with the configuration made with
+	 * this dialog.
 	 */
 	protected void createCopyright() {
-		StringBuilder header = new StringBuilder();
-		header.append("/***************************************************************************"); //$NON-NLS-1$
-		header.append('\n');
-		header.append(" * "); //$NON-NLS-1$
-		header.append(txt_Copryright.getText().replaceAll("\n", "\n * "));//$NON-NLS-1$ //$NON-NLS-2$
-		header.append('\n');
-		header.append(" * ").append('\n'); //$NON-NLS-1$
-		if (getLicenseText().length() > 0) {
-			header.append(" * "); //$NON-NLS-1$
-			header.append(getLicenseText().replaceAll("\n", "\n * ")); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		header.append("\n * Contributors:\n"); //$NON-NLS-1$
-		for (String contributor : contributors) {
-			header.append(" *     ").append(contributor).append('\n'); //$NON-NLS-1$
-		}
-		header.append(" ****************************************************************************/"); //$NON-NLS-1$
-		header.append('\n');
-		copyrightHeader = header.toString();
+		List<String> contributors = new ArrayList<String>(this.contributors);
+		copyright = new CopyrightImpl(txt_Copryright.getText(), getLicense(), contributors);
 	}
 
 	/**

@@ -40,7 +40,7 @@ public interface ICopyrighterConstants {
 	/**
 	 * Key for the preferences node containing the registered licenses content.
 	 */
-	public static final String PREF_LICENSES_CONTENT = "licensesContent";
+	public static final String PREF_LICENSES_CONTENT = "licensesContent"; //$NON-NLS-1$
 
 	/**
 	 * Key for the preferences node containing the last copyright header.

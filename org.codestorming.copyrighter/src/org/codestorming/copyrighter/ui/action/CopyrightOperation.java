@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import org.codestorming.copyrighter.JavaCopyrighter;
+import org.codestorming.copyrighter.license.Copyright;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,15 +30,16 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 public class CopyrightOperation extends WorkspaceModifyOperation {
 
 	protected Collection<IProject> projects;
-	protected String copyright;
+	protected Copyright copyright;
 
 	/**
 	 * Creates a new {@code CopyrightOperation}.
 	 * 
 	 * @param projects
 	 * @param copyright
+	 * @since 1.0
 	 */
-	public CopyrightOperation(Collection<IProject> projects, String copyright) {
+	public CopyrightOperation(Collection<IProject> projects, Copyright copyright) {
 		this.projects = projects;
 		this.copyright = copyright;
 	}

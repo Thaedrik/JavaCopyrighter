@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import org.codestorming.copyrighter.ICopyrighterConstants;
+import org.codestorming.copyrighter.license.Copyright;
 import org.codestorming.copyrighter.ui.L;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -31,7 +32,7 @@ import org.eclipse.core.runtime.jobs.Job;
 public class CopyrightJob extends Job {
 
 	protected Collection<IProject> projects;
-	protected String copyright;
+	protected Copyright copyright;
 
 	/**
 	 * Creates a new {@code CopyrightJob}.
@@ -39,8 +40,9 @@ public class CopyrightJob extends Job {
 	 * @param name
 	 * @param projects
 	 * @param copyright
+	 * @since 1.0
 	 */
-	public CopyrightJob(Collection<IProject> projects, String copyright) {
+	public CopyrightJob(Collection<IProject> projects, Copyright copyright) {
 		super(L.lbl_copyrightJob);
 		this.projects = projects;
 		this.copyright = copyright;

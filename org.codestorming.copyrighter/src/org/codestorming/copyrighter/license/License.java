@@ -15,6 +15,7 @@ package org.codestorming.copyrighter.license;
  * Description of a software license.
  * 
  * @author Thaedrik <thaedrik@gmail.com>
+ * @since 1.0
  */
 public class License {
 

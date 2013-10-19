@@ -11,6 +11,7 @@
  ****************************************************************************/
 package org.codestorming.copyrighter;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Stack;
@@ -19,6 +20,7 @@ import java.util.concurrent.FutureTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.codestorming.copyrighter.license.Copyright;
 import org.codestorming.copyrighter.replacer.IFileContentReplacer;
 import org.codestorming.copyrighter.replacer.ReplacementException;
 import org.codestorming.copyrighter.replacer.impl.IFileContentReplacerImpl;
@@ -50,9 +52,9 @@ public class JavaCopyrighter {
 	protected IProject project;
 
 	/**
-	 * The copyright header to put into the projects' java files.
+	 * The copyright to put into the projects' java files.
 	 */
-	private String copyright;
+	private Copyright copyright;
 
 	private Stack<FutureTask<Void>> fileTasks;
 
@@ -75,8 +77,9 @@ public class JavaCopyrighter {
 	 * Set the copyright header to put into the projects' java files.
 	 * 
 	 * @param copyright The copyright text.
+	 * @since 1.0
 	 */
-	public void setCopyright(String copyright) {
+	public void setCopyright(Copyright copyright) {
 		this.copyright = copyright;
 	}
 
@@ -92,8 +95,12 @@ public class JavaCopyrighter {
 		}// else
 
 		for (IFileIterator fileIterator = new IFileIterator(project); fileIterator.hasNext();) {
-			copyrightIFile(fileIterator.next());
+			final IFile file = fileIterator.next();
+			if (!file.isDerived()) {
+				copyrightIFile(file);
+			}
 		}
+		createLicenseFile();
 		waitForFilesTasks();
 		try {
 			// refresh project content
@@ -136,12 +143,12 @@ public class JavaCopyrighter {
 				if (m.find()) {
 					IFileContentReplacer replacer = new IFileContentReplacerImpl(fileString, 0, m.start());
 					try {
-						replacer.replace(copyright);
+						replacer.replace(createCopyrightFileHeader());
 						fileString.flush();
 					} catch (ReplacementException e) {
-						e.printStackTrace();
+						CopyrighterActivator.log(e);
 					} catch (IOException e) {
-						e.printStackTrace();
+						CopyrighterActivator.log(e);
 					}
 				} else {
 					// TODO Put the file in a list of none copyrighted files
@@ -150,6 +157,37 @@ public class JavaCopyrighter {
 		}, null);
 		fileTasks.push(fileTask);
 		fileTask.run();
+	}
+
+	/**
+	 * Create or update the license file at the project's root.
+	 * 
+	 * @since 1.0
+	 */
+	protected void createLicenseFile() {
+		FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
+			@Override
+			public void run() {
+				final String content = copyright.getLicense().getContent();
+				final IFile file = project.getFile("LICENCE.txt");
+				try {
+					if (content != null && content.length() > 0) {
+						final ByteArrayInputStream source = new ByteArrayInputStream(content.getBytes());
+						if (!file.exists()) {
+							file.create(source, true, null);
+						} else {
+							file.setContents(source, IFile.FORCE | IFile.KEEP_HISTORY, null);
+						}
+					} else if (file.exists()) {
+						file.delete(true, null);
+					}
+				} catch (CoreException e) {
+					CopyrighterActivator.log(e);
+				}
+			}
+		}, null);
+		fileTasks.push(task);
+		task.run();
 	}
 
 	/**
@@ -176,5 +214,27 @@ public class JavaCopyrighter {
 			}
 		}// else
 		return false;
+	}
+
+	private String createCopyrightFileHeader() {
+		StringBuilder header = new StringBuilder();
+		header.append("/****************************************************************************"); //$NON-NLS-1$
+		header.append('\n');
+		header.append(" * "); //$NON-NLS-1$
+		header.append(copyright.getHeader().replaceAll("\n", "\n * "));//$NON-NLS-1$ //$NON-NLS-2$
+		header.append('\n');
+		header.append(" * ").append('\n'); //$NON-NLS-1$
+		final String licenseHeader = copyright.getLicense().getHeader();
+		if (licenseHeader.length() > 0) {
+			header.append(" * "); //$NON-NLS-1$
+			header.append(licenseHeader.replaceAll("\n", "\n * ")); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		header.append("\n * Contributors:\n"); //$NON-NLS-1$
+		for (String contributor : copyright.getContributors()) {
+			header.append(" *     ").append(contributor).append('\n'); //$NON-NLS-1$
+		}
+		header.append(" ****************************************************************************/"); //$NON-NLS-1$
+		header.append('\n');
+		return header.toString();
 	}
 }

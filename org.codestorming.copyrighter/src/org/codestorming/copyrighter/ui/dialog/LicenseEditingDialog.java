@@ -51,6 +51,8 @@ public class LicenseEditingDialog extends Dialog {
 	private Text txt_LicenseName;
 
 	private Text txt_LicenseHeader;
+	
+	private Text txt_LicenseContent;
 
 	private License license;
 
@@ -118,15 +120,27 @@ public class LicenseEditingDialog extends Dialog {
 		lbl_LicenseHeader.setText("Header");
 		lbl_LicenseHeader.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
 		txt_LicenseHeader = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		txt_LicenseHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.minimumHeight = 120;
+		txt_LicenseHeader.setLayoutData(data);
 		if (license != null) {
 			txt_LicenseHeader.setText(license.getHeader());
 		}
 
-		// TODO Add a textarea for the license content.
+		Label lbl_LicenseContent = new Label(shell, SWT.NONE);
+		lbl_LicenseContent.setText("Content");
+		lbl_LicenseContent.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
+		txt_LicenseContent = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+		data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.minimumHeight = 250;
+		txt_LicenseContent.setLayoutData(data);
+		if (license != null && license.getContent() != null) {
+			txt_LicenseContent.setText(license.getContent());
+		}
+		
 
 		Composite buttonContainer = new Composite(shell, SWT.NONE);
-		GridData data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		data = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 		data.horizontalSpan = 2;
 		buttonContainer.setLayoutData(data);
 		buttonContainer.setLayout(new GridLayout(2, false));
@@ -168,6 +182,7 @@ public class LicenseEditingDialog extends Dialog {
 		}
 		license.setName(txt_LicenseName.getText());
 		license.setHeader(txt_LicenseHeader.getText());
+		license.setContent(txt_LicenseContent.getText());
 		this.license = license;
 	}
 
