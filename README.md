@@ -17,6 +17,12 @@ This will add the defined copyright into all the Java and Xtend files in the sel
 This will also add or replace a file named `LICENCE.txt` at the base of the project if the License content
 has been specified and is not empty (an empty licence content will __remove the file__).
 
+How to install
+==============
+
+The __JavaCopyrighter__ is installable from the __Codestorming update site__
+at http://updatesite.codestorming.org/
+
 Known issues
 ============
 
