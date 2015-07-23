@@ -146,9 +146,9 @@ public class JavaCopyrighter {
 						replacer.replace(createCopyrightFileHeader());
 						fileString.flush();
 					} catch (ReplacementException e) {
-						CopyrighterActivator.log(e);
+						CopyrighterActivator.getDefault().log(e);
 					} catch (IOException e) {
-						CopyrighterActivator.log(e);
+						CopyrighterActivator.getDefault().log(e);
 					}
 				} else {
 					// TODO Put the file in a list of none copyrighted files
@@ -182,7 +182,7 @@ public class JavaCopyrighter {
 						file.delete(true, null);
 					}
 				} catch (CoreException e) {
-					CopyrighterActivator.log(e);
+					CopyrighterActivator.getDefault().log(e);
 				}
 			}
 		}, null);
@@ -218,22 +218,29 @@ public class JavaCopyrighter {
 
 	private String createCopyrightFileHeader() {
 		StringBuilder header = new StringBuilder();
-		header.append("/****************************************************************************"); //$NON-NLS-1$
+		header.append("/*"); //$NON-NLS-1$
 		header.append('\n');
 		header.append(" * "); //$NON-NLS-1$
 		header.append(copyright.getHeader().replaceAll("\n", "\n * "));//$NON-NLS-1$ //$NON-NLS-2$
 		header.append('\n');
 		header.append(" * ").append('\n'); //$NON-NLS-1$
-		final String licenseHeader = copyright.getLicense().getHeader();
+		String licenseHeader = copyright.getLicense().getHeader();
 		if (licenseHeader.length() > 0) {
+			if (!licenseHeader.endsWith("\n")) { //$NON-NLS-1$
+				licenseHeader += "\n"; //$NON-NLS-1$
+			}
 			header.append(" * "); //$NON-NLS-1$
 			header.append(licenseHeader.replaceAll("\n", "\n * ")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		header.append("\n * Contributors:\n"); //$NON-NLS-1$
-		for (String contributor : copyright.getContributors()) {
-			header.append(" *     ").append(contributor).append('\n'); //$NON-NLS-1$
+		if (copyright.getContributors().size() > 0) {
+			header.append("\n * Contributors:\n"); //$NON-NLS-1$
+			for (String contributor : copyright.getContributors()) {
+				header.append(" *     ").append(contributor).append('\n'); //$NON-NLS-1$
+			}
+			header.append(" */"); //$NON-NLS-1$
+		} else {
+			header.deleteCharAt(header.length() - 1).append('/');
 		}
-		header.append(" ****************************************************************************/"); //$NON-NLS-1$
 		header.append('\n');
 		return header.toString();
 	}

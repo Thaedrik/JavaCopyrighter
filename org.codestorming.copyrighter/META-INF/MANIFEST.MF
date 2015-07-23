@@ -2,13 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Copyrighter
 Bundle-SymbolicName: org.codestorming.copyrighter;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.codestorming.copyrighter.CopyrighterActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.7.101";visibility:=reexport,
  org.eclipse.ui.ide;bundle-version="3.7.0",
- org.codestorming.eclipse.util;bundle-version="1.2.0"
+ org.codestorming.eclipse.util;bundle-version="[3.0.0,4.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Codestorming

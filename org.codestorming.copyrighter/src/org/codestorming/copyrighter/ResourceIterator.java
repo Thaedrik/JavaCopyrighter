@@ -96,7 +96,7 @@ public class ResourceIterator<T extends IResource> implements Iterator<T> {
 				this.members.add(member);
 			}
 		} catch (CoreException e) {
-			CopyrighterActivator.log(e);
+			CopyrighterActivator.getDefault().log(e);
 		}
 	}
 

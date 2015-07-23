@@ -79,7 +79,7 @@ public class CopyrightProjectAction implements IObjectActionDelegate {
 	private void openCopyrighterDialog(Set<IProject> projects) {
 		Shell activeShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		if (activeShell == null) {
-			CopyrighterActivator.log("Shell is null.", IStatus.ERROR);
+			CopyrighterActivator.getDefault().log("Shell is null.", IStatus.ERROR);
 			return;
 		}// else
 		CopyrightChooserDialog dialog = new CopyrightChooserDialog(activeShell);
