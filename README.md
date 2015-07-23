@@ -1,4 +1,4 @@
-JavaCopyrighter (v1.0)
+JavaCopyrighter (v1.1.0)
 ===============
 
 Add the copyright and licence information on top of the __Java__ and __Xtend__ files of an Eclipse project.
